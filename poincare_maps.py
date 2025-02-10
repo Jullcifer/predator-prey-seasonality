@@ -1,4 +1,4 @@
-"""Making Poincare Maps for various Ts season lengths for the ODEs solutions
+"""Making Poincare Sections for various Ts season lengths for the ODEs solutions
 """
 
 import numpy as np
@@ -20,7 +20,7 @@ t_end = 2000
 time_resolution = int(100)
 
 def generate_and_save_plot(a_s, growth_rate=growth_rate, time_resolution=time_resolution, t_end=t_end, init_all=init_all):
-    """Generating Poincare Maps for a specific length of the summer (a_s, Ts)
+    """Generating Poincare Sections for a specific length of the summer (a_s, Ts)
 
     Args: 
         a_s: Length of the summer parameter for sqd function
