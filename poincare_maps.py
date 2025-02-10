@@ -3,7 +3,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from rk4_wbreakcondition import rk4solver
+from rk4_solver import rk4solver
 from seasonal_odes import np_odes
 
 # Parameters and initial conditions
