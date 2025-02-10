@@ -16,7 +16,7 @@ This repository contains scripts to simulate and analyze the dynamics of a preda
 
 ## Project Overview
 
-This project models the interaction between prey (rodents) and predators (mustelids) using a system of ODEs. The model incorporates seasonal variations in the environment, specifically focusing on the length of the summer season. The primary aim is to generate Poincaré sections to analyze the system's dynamics under different seasonal lengths.
+This project models the interaction between prey (rodents) and predators (mustelids) using a system of ODEs. The model incorporates seasonal variations via different predatory responce and specifically focuses on the length of the summer season. The primary aim is to generate Poincaré sections to analyze the system's dynamics under different seasonal lengths.
 
 ## Installation
 
