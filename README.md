@@ -52,7 +52,7 @@ python plot_poincare_sections.py
 
 - `numpy`
 - `matplotlib`
-- `rk4_wbreakcondition` (for `rk4solver`)
+- `rk4_solver` (for `rk4solver`)
 - `seasonal_odes` (for `np_odes`)
 
 ### rk4_solver.py
