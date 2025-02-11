@@ -9,9 +9,6 @@ This repository contains scripts to simulate and analyze the dynamics of a preda
 - [Installation](#installation)
 - [Usage](#usage)
 - [Scripts](#scripts)
-  - [plot_poincare_sections.py](#plot_poincare_sections.py)
-  - [rk4_solver.py](#rk4_solver.py)
-  - [seasonal_odes.py](#seasonal_odes.py)
 
 
 ## Project Overview
@@ -41,12 +38,6 @@ Each script in this repository serves a specific purpose in the simulation and a
 ### plot_poincare_sections.py
 
 This script solves the seasonal ODEs using the Runge-Kutta 4th order method and plots Poincaré sections for various lengths of the summer season (`a_s`). It utilizes the `rk4_solver` to perform numerical integration and `seasonal_odes` to define the system of equations.
-
-#### Usage
-
-```bash
-python plot_poincare_sections.py
-```
 
 #### Dependencies
 
