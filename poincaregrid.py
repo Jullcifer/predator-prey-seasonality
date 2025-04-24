@@ -2,9 +2,8 @@
 """
 
 import numpy as np
-from seasonality_odes import getr
 from rk4_solver import rk4solver
-from seasonal_odes import np_odes
+from seasonal_odes import np_odes, getr
 
 r = getr()
 
