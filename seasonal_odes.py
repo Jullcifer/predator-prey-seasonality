@@ -81,3 +81,9 @@ def np_odes(
         gamma_tilde * alpha_tilde * n * p / (beta_tilde + n)  -  mu_tilde * p
     )
     return np.array([dn_dtau, dp_dtau])
+
+
+def getr():
+    """ Returns the prey reproduction rate r
+    """
+    return 5.4
