@@ -8,6 +8,7 @@ from numba import njit
 @njit
 def np_odes(
     a_s,
+    nu, # HAD TO CHANGE THIS TO BE VARIABLE IN ORDER TO USE IT
     growth_rate,
     tau,
     inital_values,
@@ -15,7 +16,6 @@ def np_odes(
     K=100,
     gamma=0.017,
     b=13.8,
-    nu=3,
     m=1,
     s=1.6,
     alpha=600,
@@ -28,6 +28,7 @@ def np_odes(
 
     Args:
         a_s: Length of the summer parameter for sqd function
+        nu: Generalist predator density dependence (per mustelid)
         kappa: Sharpness of Squdel function, 0 squared, 1 sin
         growth_rate: Growth rate of prey
         tau: Dimensionless time
@@ -36,7 +37,6 @@ def np_odes(
         K: Carrying capacity
         gamma: Conversion factor (mustelid/rodent)
         b: Prey level for half-maximal generalist predation rate
-        nu: Generalist predator density dependence (per mustelid)
         m: Predator death rate in the summer
         s: Generalist growth, maximal rate
         alpha: Predator maximum specialist predation rate
