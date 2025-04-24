@@ -32,16 +32,14 @@ def rk4solver(a_s, nu, growth_rate, time_resolution:int, t_end, init_all, odes):
     # number of total time steps over the whole differentiation time
     time_steps_total = int(np.round(tau_end / dtau))  
     # time vector for tau (tau = t*r): an ndarray of tau values at which the output is calculated (time steps)
-    # NEW
-    tau = np.linspace(0.25*growth_rate, tau_end + 0.25*growth_rate, time_steps_total)
+    tau = np.linspace(0.25*growth_rate, tau_end + 0.25*growth_rate, time_steps_total + 1)
 
     num_initial_conditions = init_all.shape[0]
     # creating an empty array for the system of 2 ODEs, i.e. preallocate array for solutions
-    # NEW
-    solutions = np.empty((num_initial_conditions, 3, int(time_steps_total//time_resolution)))
+    solutions = np.empty((num_initial_conditions, 3, int(time_steps_total//time_resolution) + 1))
 
     # Calculate the step interval for saving values at mid-summer for sqd function
-    # NEW
+    # save_interval = time_resolution // 4
     save_interval = 0
     
 
@@ -51,7 +49,7 @@ def rk4solver(a_s, nu, growth_rate, time_resolution:int, t_end, init_all, odes):
         
         # Initialize y_out with + 1 space to include the initial conditions and tau (3,)        
         # NEW
-        y_out = np.empty((3, time_steps_total // time_resolution)) * np.nan 
+        y_out = np.empty((3, time_steps_total // time_resolution + 1)) * np.nan 
 
         # Set the initial conditions in y_out
         y_out[:2, 0] = y0  # Writing out the very first initial condition
@@ -61,8 +59,9 @@ def rk4solver(a_s, nu, growth_rate, time_resolution:int, t_end, init_all, odes):
         y = y0.copy()  
 
         # Loop through each time step starting from 0
-        for i in range(1, time_steps_total): # NEW: 1 instead of nothing at beginning
+        for i in range(0, time_steps_total): 
             t0 = tau[i]
+            #print(tau[i])
             f1 = odes(a_s, nu, growth_rate, t0, y)
             f2 = odes(a_s, nu, growth_rate, t0 + dtau / 2, y + (dtau / 2) * f1)
             f3 = odes(a_s, nu, growth_rate, t0 + dtau / 2, y + (dtau / 2) * f2)
@@ -77,10 +76,11 @@ def rk4solver(a_s, nu, growth_rate, time_resolution:int, t_end, init_all, odes):
 
             # Save the state at specified intervals
             # saving only one value per year (mid-summer, at 1/4 of growth rate)
-            elif i % time_resolution == save_interval:
-                index = i // time_resolution #+ 1  # +1 because index 0 is used for initial conditions
+            elif i > 0 and (i+1) % time_resolution == save_interval:
+                index = i // time_resolution + 1  # +1 because index 0 is used for initial conditions
                 y_out[:2, index] = y
-                y_out[2, index] = tau[i]  # Store the corresponding time value
+                y_out[2, index] = tau[i+1]  # Store the corresponding time value
+                # we calculated the solution for the next time already, so it belongs to tau[i+1]
 
         # Store the complete y_out in the solutions array
         solutions[j] = y_out
