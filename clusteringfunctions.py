@@ -4,7 +4,7 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-from seasonality_odes import getr
+from seasonal_odes import getr
 from rk4_solver import rk4solver
 
 r = getr()

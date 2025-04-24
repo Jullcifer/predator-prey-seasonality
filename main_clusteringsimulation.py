@@ -5,11 +5,10 @@ import os
 import matplotlib.pyplot as plt
 import time
 
-from seasonality_odes import getr
 from poincaregrid import newpoincgrid
 from clusteringfunctions import clustering
 from csv_functions import save_list_to_csv
-from seasonal_odes import np_odes
+from seasonal_odes import np_odes, getr
 
 r = getr()
 
@@ -38,7 +37,7 @@ for nu in nu_values:
         starttime = time.time()
         
         # Run the clustering function (assuming newpoincgrid and clustering functions are defined)
-        sol = newpoincgrid(np_odes, 0.0, 5000, 0.01, aS, nu, 0.01, 1.0, 0.01, 0.2, 10, 10)
+        sol = newpoincgrid(np_odes, 5000, 0.01, aS, nu, 0.01, 1.0, 0.01, 0.2, 10, 10)
         intermediatetime = time.time()
         elapsedtime = intermediatetime - starttime
         timemins = int(elapsedtime // 60)
