@@ -4,7 +4,7 @@ import numpy as np
 from numba import njit, prange
 
 @njit(parallel=True)
-def rk4solver(a_s, growth_rate, time_resolution:int, t_end, init_all, odes):
+def rk4solver(a_s, nu, growth_rate, time_resolution:int, t_end, init_all, odes):
     """Solve ODEs using the Runge-Kutta 4 method.
 
     Args:
@@ -15,6 +15,12 @@ def rk4solver(a_s, growth_rate, time_resolution:int, t_end, init_all, odes):
         time_resolution: time steps for differentiation per year (growth_rate / dtau = time_resolution)
         init_all: 2D array with initial conditions for n, p
         odes: Function call to N-P ODE equations
+        
+    Note:   this ODE-solver rk4solver starts automatically at t=0.25*r. 
+            The Poincare section is always taken at time t=t0 % r, so with the 
+            initial shift 0.25*r, always in the middle of the summer (0.25*r)
+            The simulation runs for years amount of years, i.e. with the 
+            initial shift until (years+0.25)*r 
 
     Return: a 3D numpy.ndarray (initial condition, rows: n/p/tau, solutions for each time step)
     """
@@ -25,23 +31,24 @@ def rk4solver(a_s, growth_rate, time_resolution:int, t_end, init_all, odes):
     tau_end = t_end * growth_rate
     # number of total time steps over the whole differentiation time
     time_steps_total = int(np.round(tau_end / dtau))  
-    # t = np.linspace(0, t_end, tspan) # time vector in t (years)
     # time vector for tau (tau = t*r): an ndarray of tau values at which the output is calculated (time steps)
-    tau = np.linspace(0, tau_end, time_steps_total)
-
+    tau = np.linspace(0.25*growth_rate, tau_end + 0.25*growth_rate, time_steps_total + 1)
 
     num_initial_conditions = init_all.shape[0]
     # creating an empty array for the system of 2 ODEs, i.e. preallocate array for solutions
-    solutions = np.empty((num_initial_conditions, 3, int(time_steps_total//time_resolution + 1)))
+    solutions = np.empty((num_initial_conditions, 3, int(time_steps_total//time_resolution) + 1))
 
     # Calculate the step interval for saving values at mid-summer for sqd function
-    save_interval = time_resolution // 4
+    # save_interval = time_resolution // 4
+    save_interval = 0
+    
 
     for j in prange(num_initial_conditions):
         # Retrieve the initial conditions and create an array to store it
         y0 = init_all[j]
         
-        # Initialize y_out with + 1 space to include the initial conditions and tau (3,)
+        # Initialize y_out with + 1 space to include the initial conditions and tau (3,)        
+        # NEW
         y_out = np.empty((3, time_steps_total // time_resolution + 1)) * np.nan 
 
         # Set the initial conditions in y_out
@@ -52,12 +59,13 @@ def rk4solver(a_s, growth_rate, time_resolution:int, t_end, init_all, odes):
         y = y0.copy()  
 
         # Loop through each time step starting from 0
-        for i in range(time_steps_total):
+        for i in range(0, time_steps_total): 
             t0 = tau[i]
-            f1 = odes(a_s, growth_rate, t0, y)
-            f2 = odes(a_s, growth_rate, t0 + dtau / 2, y + (dtau / 2) * f1)
-            f3 = odes(a_s, growth_rate, t0 + dtau / 2, y + (dtau / 2) * f2)
-            f4 = odes(a_s, growth_rate, t0 + dtau, y + dtau * f3)
+            #print(tau[i])
+            f1 = odes(a_s, nu, growth_rate, t0, y)
+            f2 = odes(a_s, nu, growth_rate, t0 + dtau / 2, y + (dtau / 2) * f1)
+            f3 = odes(a_s, nu, growth_rate, t0 + dtau / 2, y + (dtau / 2) * f2)
+            f4 = odes(a_s, nu, growth_rate, t0 + dtau, y + dtau * f3)
 
             # Update y with the new values
             y = y + (dtau / 6.0) * (f1 + 2 * f2 + 2 * f3 + f4)
@@ -68,12 +76,14 @@ def rk4solver(a_s, growth_rate, time_resolution:int, t_end, init_all, odes):
 
             # Save the state at specified intervals
             # saving only one value per year (mid-summer, at 1/4 of growth rate)
-            elif i % time_resolution == save_interval:
+            elif i > 0 and (i+1) % time_resolution == save_interval:
                 index = i // time_resolution + 1  # +1 because index 0 is used for initial conditions
                 y_out[:2, index] = y
-                y_out[2, index] = tau[i]  # Store the corresponding time value
+                y_out[2, index] = tau[i+1]  # Store the corresponding time value
+                # we calculated the solution for the next time already, so it belongs to tau[i+1]
 
         # Store the complete y_out in the solutions array
         solutions[j] = y_out
+        #print(y_out)
 
     return solutions
