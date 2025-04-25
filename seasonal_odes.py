@@ -6,7 +6,7 @@ import numpy as np
 from numba import njit
 
 @njit
-def np_odes(
+def np_odes(    
     a_s,
     growth_rate,
     tau,
@@ -15,12 +15,12 @@ def np_odes(
     K=100,
     gamma=0.017,
     b=13.8,
-    nu=3,
-    m=1,
+    m=1.0,
     s=1.6,
     alpha=600,
     beta=13,
     mu=3.4,
+    nu = 5.5,
     kappa=0.001,
     c = 0.4, 
 ):

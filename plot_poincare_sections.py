@@ -8,7 +8,7 @@ from seasonal_odes import np_odes
 
 # Parameters and initial conditions
 n_init_number = 100
-p_init_number = 50
+p_init_number = 100
 n_init = np.linspace(0.05, 0.95, n_init_number).reshape((n_init_number, 1))
 p_init = np.linspace(0.05, 0.55, p_init_number).reshape((p_init_number, 1))
 init_all = np.array(np.meshgrid(n_init, p_init)).T.reshape(-1, 2)
@@ -24,7 +24,10 @@ def generate_and_save_plot(a_s, growth_rate=growth_rate, time_resolution=time_re
 
     Args: 
         a_s: Length of the summer parameter for sqd function
-
+        growth_rate: Growth rate of prey
+        time_resolution: time steps for differentiation per year (growth_rate / dtau = time_resolution)
+        t_end: final time point for differentiation, in years
+        init_all: 2D array with initial conditions for n, p
     """
     fig, ax = plt.subplots(figsize=(8, 6))
     sols = rk4solver(a_s=a_s, growth_rate=growth_rate, time_resolution=time_resolution, t_end=t_end, init_all=init_all, odes=np_odes)
@@ -41,10 +44,10 @@ def generate_and_save_plot(a_s, growth_rate=growth_rate, time_resolution=time_re
     ax.set_ylabel("p (predator biomass / unit area)")
     ax.set_title(f"T_s = {a_s*0.5:.5f}, nu = 3")
     ax.grid(True)
-    plt.savefig(f"/home/jullcifer/Modelling/PMaps/plot_{a_s:.5f}.png", dpi=300)
+    plt.savefig(f"/home/jullcifer/Modelling/PMaps/plot_{a_s:.5f}_point3.png", dpi=300)
     plt.close(fig)
 
-a_s_values = np.round(np.linspace(0.010, 1.950, 100), 5)  
-    
+#a_s_values = np.round(np.linspace(0.010, 1.950, 100), 5)  
+a_s_values = [1.85, 1.90, 1.95] 
 for each_a_s in a_s_values:
     generate_and_save_plot(each_a_s, growth_rate=growth_rate, time_resolution=time_resolution, t_end=t_end, init_all=init_all)
