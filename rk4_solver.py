@@ -71,7 +71,7 @@ def rk4solver(a_s, growth_rate, time_resolution:int, t_end, init_all, odes):
             elif i % time_resolution == save_interval:
                 index = i // time_resolution + 1  # +1 because index 0 is used for initial conditions
                 y_out[:2, index] = y
-                y_out[2, index] = tau[i]  # Store the corresponding time value  
+                y_out[2, index] = tau[i]  # Store the corresponding time value
 
         # Store the complete y_out in the solutions array
         solutions[j] = y_out
