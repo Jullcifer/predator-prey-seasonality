@@ -8,7 +8,7 @@ from numba import njit
 @njit
 def np_odes(
     a_s,
-    nu, # HAD TO CHANGE THIS TO BE VARIABLE IN ORDER TO USE IT
+    nu, 
     growth_rate,
     tau,
     inital_values,
@@ -84,6 +84,6 @@ def np_odes(
 
 
 def getr():
-    """ Returns the prey reproduction rate r
+    """ Returns the prey growth rate r
     """
     return 5.4

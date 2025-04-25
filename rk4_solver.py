@@ -41,7 +41,6 @@ def rk4solver(a_s, nu, growth_rate, time_resolution:int, t_end, init_all, odes):
     # Calculate the step interval for saving values at mid-summer for sqd function
     # save_interval = time_resolution // 4
     save_interval = 0
-    
 
     for j in prange(num_initial_conditions):
         # Retrieve the initial conditions and create an array to store it
@@ -84,6 +83,5 @@ def rk4solver(a_s, nu, growth_rate, time_resolution:int, t_end, init_all, odes):
 
         # Store the complete y_out in the solutions array
         solutions[j] = y_out
-        #print(y_out)
 
     return solutions
