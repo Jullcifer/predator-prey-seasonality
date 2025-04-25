@@ -35,8 +35,13 @@ Each script in this repository serves a specific purpose in the simulation and a
 
 ## Scripts
 
-### plot_poincare_sections.py
+### rk4_solver.py
+This script provides a Runge-Kutta 4th order solver for solving ODEs. It is optimized using numba for performance and can simulate for a matrix of initial conditions for prey (n) and predator (p).
 
+### seasonal_odes.py
+This script defines the system of ODEs for the rodent-mustelid dynamics, adapted from [Tyson et al. (2016)](https://doi.org/10.1086/688665). It utilizes parameters from the rodent-mustelid system in Fennoscandia.
+
+### plot_poincare_sections.py
 This script solves the seasonal ODEs using the Runge-Kutta 4th order method and plots Poincaré sections for various lengths of the summer season (`a_s`). It utilizes the `rk4_solver` to perform numerical integration and `seasonal_odes` to define the system of equations.
 
 #### Dependencies
@@ -46,11 +51,9 @@ This script solves the seasonal ODEs using the Runge-Kutta 4th order method and 
 - `rk4_solver` (for `rk4solver`)
 - `seasonal_odes` (for `np_odes`)
 
-### rk4_solver.py
-This script provides a Runge-Kutta 4th order solver for solving ODEs. It is optimized using numba for performance and can simulate for a matrix of initial conditions for prey (n) and predator (p).
+### main_clusteringsimulation.py
+The main function for creating multiple grid simulations of the clustered poincare maps.
 
-### seasonal_odes.py
-This script defines the system of ODEs for the rodent-mustelid dynamics, adapted from [Tyson et al. (2016)](https://doi.org/10.1086/688665). It utilizes parameters from the rodent-mustelid system in Fennoscandia.
 
 
 
