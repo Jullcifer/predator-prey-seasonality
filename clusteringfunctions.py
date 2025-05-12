@@ -175,7 +175,7 @@ def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.
     
     # with these new unique representatives, we can now check for periodicity.
     
-    newclusters, chaosclusterlist, cyclelist, notsurelist, FTLE_average, FTLE_tolerance = advancedclustering(f, croppedlist, X, 50, 1e-5, aS, nu)
+    newclusters, chaosclusterlist, cyclelist, notsurelist, FTLE_average, FTLE_tolerance = advancedclustering(f, croppedlist, X, 50, 1e-6, aS, nu)
     # NOTE: due to the new ODE-solving function, I recognized that the solution is not too accurate, so I set the tolerance down a bit (5e-4 or 1e-5 instead of 1e-6)
     
     ###########################################
@@ -459,7 +459,7 @@ def chaosorcycle(f, X_0, startyear, years, aS, nu, tol=1e-2):
       
     FTLE_values = []
     n0 = X_0[0]
-    p0 = X_0[0]
+    p0 = X_0[1]
     t0 = 0.25*r
       
     for i in range(startyear+1, startyear+1+years):
