@@ -1,10 +1,10 @@
-""" This file contains 4 functions which are used to create the bifurcation
+""" This file contains 3 functions which are used to create the bifurcation
     diagram from our simulation results.
     
     classify_and_read_data and bifurcationdiagram use the simulation results 
-    directly, whereas 
-    classify_and_read_data_cleaned and bifurcationdiagram_cleaned require a 
-    manually cleaned data set, saved as a category_matrix stemming from the 
+    directly, whereas bifurcationdiagram_cleaned requires a 
+    manually cleaned data set, saved as category_matrix_cleaned.txt which needs 
+    to be modified as a copy of category_matrix.txt which originates from the 
     bifurcationdiagram function.
 """
 
@@ -39,6 +39,10 @@ def classify_and_read_data(base_dir):
     data = {}
     
     for nu_dir in os.listdir(base_dir):
+        # skipping the folder if it is not a nu-folder
+        if not nu_dir.startswith("nu"):
+            continue
+        
         nu_path = os.path.join(base_dir, nu_dir)
         if os.path.isdir(nu_path):
             data[nu_dir] = {}
@@ -57,6 +61,7 @@ def classify_and_read_data(base_dir):
                             lists_data[list_name] = []
 
                     # Determine categoryvalues based on the given conditions
+                    '''
                     categoryvalues = None
                     if lists_data["chaoslist"] and not lists_data["clusterlist"] and not lists_data["cyclelist"] and not lists_data["notsurelist"]:
                         categoryvalues = 0
@@ -81,80 +86,26 @@ def classify_and_read_data(base_dir):
                         categoryvalues = 8
                     elif not lists_data["chaoslist"] and len(lists_data["clusterlist"]) > 1:
                         categoryvalues = 9
-
-                    data[nu_dir][aS_dir] = {
-                        "lists": lists_data,
-                        "categoryvalues": categoryvalues
-                    }
-    
-    return data
-
-
-def classify_and_read_data_cleaned(base_dir):
-    """ This function maps the cleaned results from the long-time simulations for 
-        all the combinations of aS and nu to the categories resulting from that. 
-        In contrast to classify_and_read_data, we eliminated all the notsure-
-        components, resulting in only 6 categories (instead of 10).
-        Furthermore, some results were manually corrected, as some behaviour 
-        might have been misclassified originally.
-        
-        The categories are classified by numbers 0 to 5, where 
-                0: "Only chaos",
-                1: "Chaos and cyclic points",
-                2: "Only quasi-periodic orbit",
-                3: "Quasi-periodic orbit and cyclic points",
-                4: "Only one (yearly) cyclic point",
-                5: "Only cyclic points"
-
-    Args: 
-        base_dir: our current working directory, i.e. where the data is stored
-        
-    Returns:
-        data: a dictionary mapping all the parameter combinations (aS, nu) to the categories resulting from the simulations for the corresponding aS and nu
-
-    """
-    data = {}
-    
-    for nu_dir in os.listdir(base_dir):
-        nu_path = os.path.join(base_dir, nu_dir)
-        if os.path.isdir(nu_path):
-            data[nu_dir] = {}
-            
-            for aS_dir in os.listdir(nu_path):
-                aS_path = os.path.join(nu_path, aS_dir)
-                if os.path.isdir(aS_path):
-                    data[nu_dir][aS_dir] = {}
-                    
-                    lists_data = {}
-                    for list_name in ["clusterlist", "chaoslist", "cyclelist", "notsurelist"]:
-                        file_path = os.path.join(aS_path, f"{list_name}.csv")
-                        if os.path.exists(file_path):
-                            lists_data[list_name] = read_csv(file_path)
-                        else:
-                            lists_data[list_name] = []
-
-                    # Determine categoryvalues based on the given conditions
+                    '''
                     categoryvalues = None
-                    if lists_data["chaoslist"] and not lists_data["clusterlist"] and not lists_data["cyclelist"] and not lists_data["notsurelist"]:
+                    if lists_data["chaoslist"] and not lists_data["clusterlist"] and not lists_data["cyclelist"]:
+                        # Chaos (a)
                         categoryvalues = 0
-                    elif lists_data["chaoslist"] and not lists_data["clusterlist"] and not lists_data["cyclelist"] and lists_data["notsurelist"]:
-                        categoryvalues = 0
-                    elif lists_data["chaoslist"] and lists_data["clusterlist"] and not lists_data["cyclelist"] and lists_data["notsurelist"]:
+                    elif lists_data["chaoslist"] and lists_data["clusterlist"] and not lists_data["cyclelist"]:
+                        # Chaos and Cyclic Points (b)
                         categoryvalues = 1
-                    elif lists_data["chaoslist"] and lists_data["clusterlist"] and not lists_data["cyclelist"] and not lists_data["notsurelist"]:
-                        categoryvalues = 1
-                    elif not lists_data["chaoslist"] and lists_data["clusterlist"] and not lists_data["cyclelist"] and lists_data["notsurelist"]:
-                        categoryvalues = 3
-                    elif not lists_data["chaoslist"] and not lists_data["clusterlist"] and lists_data["cyclelist"] and not lists_data["notsurelist"]:
+                    elif not lists_data["chaoslist"] and not lists_data["clusterlist"] and lists_data["cyclelist"]:
+                        # Quasi-Periodic Orbit (c)
                         categoryvalues = 2
-                    elif not lists_data["chaoslist"] and not lists_data["clusterlist"] and lists_data["cyclelist"] and lists_data["notsurelist"]:
-                        categoryvalues = 2
-                    elif not lists_data["chaoslist"] and lists_data["clusterlist"] and lists_data["cyclelist"] and not lists_data["notsurelist"]:
+                    elif not lists_data["chaoslist"] and lists_data["clusterlist"] and lists_data["cyclelist"]:
+                        # Quasi-Periodic Orbit and Cyclic Points (d)
                         categoryvalues = 3
-                    elif not lists_data["chaoslist"] and len(lists_data["clusterlist"]) == 1:
-                        categoryvalues = 4
-                    elif not lists_data["chaoslist"] and len(lists_data["clusterlist"]) > 1:
+                    elif not lists_data["chaoslist"] and not lists_data["cyclelist"] and len(lists_data["clusterlist"]) == 1:
+                        # One Year Cycle (f)
                         categoryvalues = 5
+                    elif not lists_data["chaoslist"] and not lists_data["cyclelist"] and len(lists_data["clusterlist"]) > 1:
+                        # Multi-Year Cycles (e)
+                        categoryvalues = 4
 
                     data[nu_dir][aS_dir] = {
                         "lists": lists_data,
@@ -200,7 +151,7 @@ def bifurcationdiagram(base_directory, saveplot=True):
                 else:
                     print(f"  {list_name}: No data")
     
-    cmap_categories = plt.get_cmap('rainbow', 10)
+    cmap_categories = plt.get_cmap('rainbow', 6)
     
     
     # Create a grid of aS and nu values
@@ -220,35 +171,42 @@ def bifurcationdiagram(base_directory, saveplot=True):
     np.savetxt("category_matrix.txt", category_matrix, fmt='%.0f', delimiter=', ')
         
     
-    # Define the text labels for each category
     category_labels = {
-        0: "Only chaos",
-        1: "Chaos and notsure",
-        2: "Chaos, notsure and cyclic points",
-        3: "Chaos and cyclic points",
-        4: "Only cycle",
-        5: "Cycle and notsure",
-        6: "Cycle and cyclic points",
-        7: "Cyclic points and notsure",
-        8: "Only one (yearly) cyclic point",
-        9: "Only cyclic points"
+        0: "Chaos (a)",
+        1: "Chaos and Cyclic Points (b)",
+        2: "Quasi-Periodic Orbit (c)",
+        3: "Quasi-Periodic Orbit and Cyclic Points (d)",
+        4: "Multi-Year-Cycles (e)",
+        5: "One Year Cycle (f)"
     }
     
-    # Create the plot with squares/rectangles filling out the whole space
-    fig = plt.figure(figsize=(10, 8))
-    plt.pcolormesh(aS_unique, nu_unique, category_matrix, cmap=cmap_categories, shading='auto')
+    # Now the plotting
+    # Set font properties
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['font.serif'] = ['DejaVu Serif']
     
+    # Create the plot with squares/rectangles filling out the whole space
+    fig, ax = plt.subplots(figsize=(14, 9), dpi = 600)
+    plt.pcolormesh(aS_unique, nu_unique, category_matrix, cmap=cmap_categories, shading='auto')
+   
     # Add a colorbar with text labels
     cbar = plt.colorbar()
-    cbar.set_ticks(np.arange(0, 10))
-    cbar.set_ticklabels([category_labels[i] for i in range(10)])
-    cbar.set_label('Category Descriptions')
+    cbar.set_label("Category Descriptions", fontsize = 14, labelpad = 10)
     
+    cbar.set_ticks([0, 1, 2, 3, 4, 5])
+    cbar.set_ticklabels([category_labels[i] for i in [0, 1, 2, 3, 4, 5]])
+   
     # Add labels and title
-    plt.xlabel('aS')
-    plt.ylabel('nu')
-    plt.title('Bifurcation Grid Plot')
+    plt.xlabel(r'$a_S$', fontsize = 14)
+    plt.ylabel(r'$\nu$', fontsize = 14)
+    plt.title("Numerical Bifurcation Diagram", fontsize = 18, pad = 20)
     
+    # To avoid cutting off the legend
+    plt.tight_layout()
+    
+    # Make additional adjustments to get some space on the boundaries
+    plt.subplots_adjust(left=0.05, right=0.8, top=0.9, bottom=0.1)
+   
     # Show the plot
     plt.show()
     
@@ -256,7 +214,7 @@ def bifurcationdiagram(base_directory, saveplot=True):
     if saveplot == True:
         fig.savefig(f"{base_directory}/BifurcationGridPlot.png")
     
-    print(category_matrix)
+    #print(category_matrix)
     
     return()
     
@@ -271,7 +229,7 @@ def cleanedbifurcationdiagram(base_directory, saveplot=True):
         saveplot: boolean to determine whether we want to save the diagram
 
     """
-    simulation_data = classify_and_read_data_cleaned(base_directory)
+    simulation_data = classify_and_read_data(base_directory)
 
     aSvalues = []
     nuvalues = []
@@ -299,31 +257,15 @@ def cleanedbifurcationdiagram(base_directory, saveplot=True):
     # Create a grid of aS and nu values
     aS_unique = np.unique(aSvalues)
     nu_unique = np.unique(nuvalues)
-        
-
-    # The old category labels are as follows. However, we want to get rid of all
-    # the notsure categorization, thus: re-categorize them in the next step.
-    category_labels = {
-        0: "Only chaos",
-        1: "Chaos and notsure",
-        2: "Chaos, notsure and cyclic points",
-        3: "Chaos and cyclic points",
-        4: "Only cycle",
-        5: "Cycle and notsure",
-        6: "Cycle and cyclic points",
-        7: "Cyclic points and notsure",
-        8: "Only one (yearly) cyclic point",
-        9: "Only cyclic points"
-    }
     
-    # Define the text labels for each new category
+    # Define the text labels for each category
     category_labels_cleaned = {
-        0: "Only chaos",
-        1: "Chaos and cyclic points",
-        2: "Only quasi-periodic orbit",
-        3: "Quasi-periodic orbit and cyclic points",
-        4: "Only one (yearly) cyclic point",
-        5: "Only cyclic points"
+        0: "Chaos (a)",
+        1: "Chaos and Cyclic Points (b)",
+        2: "Quasi-Periodic Orbit (c)",
+        3: "Quasi-Periodic Orbit and Cyclic Points (d)",
+        4: "Multi-Year-Cycles (e)",
+        5: "One Year Cycle (f)"
     }
 
 
@@ -371,7 +313,7 @@ def cleanedbifurcationdiagram(base_directory, saveplot=True):
     plt.tight_layout()
     
     # Make additional adjustments to get some space on the boundaries
-    plt.subplots_adjust(left=0.05, right=0.85, top=0.9, bottom=0.1)
+    plt.subplots_adjust(left=0.05, right=0.8, top=0.9, bottom=0.1)
    
     # Show the plot
     plt.show()
