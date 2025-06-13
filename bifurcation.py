@@ -186,33 +186,33 @@ def bifurcationdiagram(base_directory, saveplot=True):
     plt.rcParams['font.serif'] = ['DejaVu Serif']
     
     # Create the plot with squares/rectangles filling out the whole space
-    fig, ax = plt.subplots(figsize=(14, 9), dpi = 600)
-    plt.pcolormesh(aS_unique, nu_unique, category_matrix, cmap=cmap_categories, shading='auto')
+    fig, ax = plt.subplots(figsize=(10, 6), dpi = 150)
+    plt.pcolormesh(aS_unique, nu_unique, category_matrix, cmap=cmap_categories, shading='auto', vmin=0, vmax=5)
    
     # Add a colorbar with text labels
     cbar = plt.colorbar()
-    cbar.set_label("Category Descriptions", fontsize = 14, labelpad = 10)
+    cbar.set_label("Category Descriptions", fontsize = 8, labelpad = 5)
     
     cbar.set_ticks([0, 1, 2, 3, 4, 5])
     cbar.set_ticklabels([category_labels[i] for i in [0, 1, 2, 3, 4, 5]])
    
     # Add labels and title
-    plt.xlabel(r'$a_S$', fontsize = 14)
-    plt.ylabel(r'$\nu$', fontsize = 14)
-    plt.title("Numerical Bifurcation Diagram", fontsize = 18, pad = 20)
+    plt.xlabel(r'$a_S$', fontsize = 12)
+    plt.ylabel(r'$\nu$', fontsize = 12)
+    plt.title("Numerical Bifurcation Diagram", fontsize = 10, pad = 5)
     
     # To avoid cutting off the legend
     plt.tight_layout()
     
     # Make additional adjustments to get some space on the boundaries
-    plt.subplots_adjust(left=0.05, right=0.8, top=0.9, bottom=0.1)
+    # plt.subplots_adjust(left=0.1, right=0.8, top=0.9, bottom=0.1)
    
     # Show the plot
     plt.show()
     
     # If we want to save the plot
     if saveplot == True:
-        fig.savefig(f"{base_directory}/BifurcationGridPlot.png")
+        fig.savefig(f"{base_directory}/BifurcationGridPlot.png", bbox_inches='tight')
     
     #print(category_matrix)
     
@@ -295,7 +295,7 @@ def cleanedbifurcationdiagram(base_directory, saveplot=True):
     
     # Create the plot with squares/rectangles filling out the whole space
     fig, ax = plt.subplots(figsize=(14, 9), dpi = 600)
-    plt.pcolormesh(aS_unique, nu_unique, category_matrix, cmap=cmap_categories, shading='auto')
+    plt.pcolormesh(aS_unique, nu_unique, category_matrix, cmap=cmap_categories, shading='auto', vmin=0, vmax=5)
    
     # Add a colorbar with text labels
     cbar = plt.colorbar()

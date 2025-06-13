@@ -569,6 +569,11 @@ def FTLE_new(f, initial_conditions, delta, aS, nu, years=1, dt=0.01):
       
         # creating the matrix
         C = np.array([[M11*M11 + M21*M21, M11*M12 + M21*M22], [M12*M11 + M22*M21, M12*M12 + M22*M22]])
+        # Skip if C contains NaN or Inf
+        if not np.all(np.isfinite(C)):
+            print("Warning: C contains NaN or Inf. Skipping this FTLE calculation.")
+            lam.append(np.nan)
+            continue
         ev = np.linalg.eig(C)
       
         # now the calculation

@@ -27,5 +27,5 @@ from bifurcation import bifurcationdiagram, cleanedbifurcationdiagram
 
 base_directory = os.getcwd()
 
-#bifurcationdiagram(base_directory)
-cleanedbifurcationdiagram(base_directory)
+bifurcationdiagram(base_directory)
+#cleanedbifurcationdiagram(base_directory)
