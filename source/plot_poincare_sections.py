@@ -1,16 +1,22 @@
 """Making Poincare Sections for various Ts season lengths for the ODEs solutions
 """
 
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from rk4_solver import rk4solver
 from seasonal_odes import np_odes
 
 # Specify desired initial conditions
-n_init_number = 100
-p_init_number = 100
-n_init = np.linspace(0.05, 0.95, n_init_number).reshape((n_init_number, 1))
-p_init = np.linspace(0.05, 0.95, p_init_number).reshape((p_init_number, 1))
+n_init_number = 10 # Number of initial conditions for n (prey biomass)
+p_init_number = 10 # Number of initial conditions for p (predator biomass)
+nmin = 0.05 # Lower end of the range for the initial n-values
+nmax = 0.95 # Upper end of the range for the initial n-values
+pmin = 0.05 # Lower end of the range for the initial p-values
+pmax = 0.95 # Upper end of the range for the initial p-values
+# Create a grid of initial conditions for n and p
+n_init = np.linspace(nmin, nmax, n_init_number).reshape((n_init_number, 1))
+p_init = np.linspace(pmin, pmax, p_init_number).reshape((p_init_number, 1))
 init_all = np.array(np.meshgrid(n_init, p_init)).T.reshape(-1, 2)
 # Specify desired parameter values for nu, growth_rate
 nu = 3
@@ -48,11 +54,14 @@ def generate_and_save_plot(a_s, nu, growth_rate=growth_rate, time_resolution=tim
     ax.set_ylabel("p (predator biomass / unit area)")
     ax.set_title(f"T_s = {a_s*0.5:.5f}, nu = 3")
     ax.grid(True)
-    plt.savefig(f"/home/jullcifer/Modelling/PMaps/kappa99_2/plot_{a_s:.5f}.png", dpi=300)
+    plt.savefig(f"PMaps/plot_{a_s:.5f}.png", dpi=300)
     plt.close(fig)
 
 # Specify the range of a_s values to iterate over
-a_s_values = np.round(np.linspace(0.010, 1.950, 100), 5)  
+a_s_values = np.round(np.linspace(0.010, 1.950, 10), 5)  
+
+# Ensure output directory exists before plotting
+os.makedirs("PMaps", exist_ok=True)
 
 # Run and save a plot for each a_s value    
 for each_a_s in a_s_values:

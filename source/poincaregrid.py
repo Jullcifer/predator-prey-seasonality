@@ -5,9 +5,9 @@ import numpy as np
 from rk4_solver import rk4solver
 from seasonal_odes import np_odes, getr
 
-r = getr()
+growth_rate = getr()
 
-def newpoincgrid(f=np_odes, years=1000, dt=0.01, aS=2*0.7, nu=0.4, nmin=0.01, nmax=1.0, pmin=0.01, pmax=0.13, Nn=10, Np=10):
+def newpoincgrid(f=np_odes, years=1000, dt=0.01, a_s=2*0.7, nu=0.4, nmin=0.01, nmax=1.0, pmin=0.01, pmax=0.13, Nn=10, Np=10):
     """ Creates a grid of initial condition, simulates the system for a long time 
         and returns the poincare sections of each trajectory
     
@@ -15,7 +15,7 @@ def newpoincgrid(f=np_odes, years=1000, dt=0.01, aS=2*0.7, nu=0.4, nmin=0.01, nm
         f: rhs function of the ODE under investigation
         years: number of years the simulation should run for (tend = t0 + years)
         dt: time increments per year
-        aS: double the summer length
+        a_s: double the summer length
         nu: intrinsic predator winter mortality rate
         nmin: lower end of the range for the initial n-values
         nmax: upper end of the range for the initial n-values
@@ -44,7 +44,7 @@ def newpoincgrid(f=np_odes, years=1000, dt=0.01, aS=2*0.7, nu=0.4, nmin=0.01, nm
     #print(init_all)
     
     # now the computation of the solution
-    sol = rk4solver(aS, nu, r, int(1/dt), years, init_all, f)
+    sol = rk4solver(a_s, nu, growth_rate, int(1/dt), years, init_all, f)
     
     #print(sol.shape)
     #print(sol)

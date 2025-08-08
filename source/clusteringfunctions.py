@@ -7,9 +7,9 @@ import matplotlib.pyplot as plt
 from seasonal_odes import getr
 from rk4_solver import rk4solver
 
-r = getr()
+growth_rate = getr()
 
-def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.getcwd()):
+def clustering(f, poinc_sol, a_s, nu, plotit = True, saveplot=False, savepath=os.getcwd()):
     """ Groups the poincare grid solution into clusters of the same long-term 
         behaviour. 
         First, we cut the trajectories so that we only use the last 50 entries
@@ -28,14 +28,14 @@ def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.
         f: our right hand side of the ODE - i.e. np_odes
         poinc_sol:  3D array consisting of our solution trajectories
                     where each trajectory i at time t has entries [n,p,t]
-        aS: double the summer length
+        a_s: double the summer length
         nu: generalist predator density dependence parameter
         plotit: boolean for plotting the clustered graph
         saveplot: boolean for saving the plot
         savepath: path to save the plot
 
     Return: 8 outputs, namely
-        aS: double the summer length
+        a_s: double the summer length
         nu: generalist predator density dependence parameter
         newclusters:    list with entries [i, x, per]
                         where i denotes the index of the new cluster that point
@@ -175,7 +175,7 @@ def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.
     
     # with these new unique representatives, we can now check for periodicity.
     
-    newclusters, chaosclusterlist, cyclelist, notsurelist, FTLE_average, FTLE_tolerance = advancedclustering(f, croppedlist, X, 50, 1e-6, aS, nu)
+    newclusters, chaosclusterlist, cyclelist, notsurelist, FTLE_average, FTLE_tolerance = advancedclustering(f, croppedlist, X, 50, 1e-6, a_s, nu)
     # NOTE: due to the new ODE-solving function, I recognized that the solution is not too accurate, so I set the tolerance down a bit (5e-4 or 1e-5 instead of 1e-6)
     
     ###########################################
@@ -191,7 +191,7 @@ def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.
         fig = plt.figure(figsize=(12,8))
         plt.xlabel("Prey n")
         plt.ylabel("Predator p")
-        plt.title(f"Poincare map clusters in the prey-predator space for T_S = {np.round(aS/2, 4)} and nu = {nu}")
+        plt.title(f"Poincare map clusters in the prey-predator space for T_S = {np.round(a_s/2, 4)} and nu = {nu}")
         plt.vlines(0, ymin=0, ymax=0.2, color='lightgrey')
         plt.hlines(0, xmin=0, xmax=1.0, color='lightgrey')
       
@@ -276,13 +276,13 @@ def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.
         # saving the plot?
       
         if saveplot == True:
-            fig.savefig(f"{savepath}/Poincaregridclusters_TS_{np.round(aS/2, 4)}_nu_{nu}.png")
+            fig.savefig(f"{savepath}/Poincaregridclusters_TS_{np.round(a_s/2, 4)}_nu_{nu}.png")
     
-    return aS, nu, newclusters, chaosclusterlist, cyclelist, notsurelist, FTLE_average, FTLE_tolerance
+    return a_s, nu, newclusters, chaosclusterlist, cyclelist, notsurelist, FTLE_average, FTLE_tolerance
 
 
 
-def advancedclustering(f, croppedlist, X, tmax, tol, aS, nu):
+def advancedclustering(f, croppedlist, X, tmax, tol, a_s, nu):
     """ This function takes one representative for each cluster and then 
         decides whether this representative (and thus: all the trajectories
         belonging to this cluster) is a cyclic point - if so: of what length -
@@ -310,7 +310,7 @@ def advancedclustering(f, croppedlist, X, tmax, tol, aS, nu):
         tmax: the maximum length of cycles we should search for. Should be <= 50
         tol: the threshold for determining whether two points are equal or not.
              Needed when checking for cyclic points.
-        aS: double the summer length (one of the bifurcation parameters)
+        a_s: double the summer length (one of the bifurcation parameters)
         nu: generalist predator density dependence parameter (second bif. param)
 
     Return: the four different lists as well as the FTLE values and the threshold
@@ -411,7 +411,7 @@ def advancedclustering(f, croppedlist, X, tmax, tol, aS, nu):
     if chaosclusterlist:
         # we have either chaos or cycles. Test which we have
         Xtest = chaosclusterlist[0]
-        chaosornot = chaosorcycle(f, Xtest, 50, 10, aS, nu)
+        chaosornot = chaosorcycle(f, Xtest, 50, 10, a_s, nu)
         if chaosornot[0] == 'cycle':
             print('cycle')
             cyclelist = chaosclusterlist
@@ -428,7 +428,7 @@ def advancedclustering(f, croppedlist, X, tmax, tol, aS, nu):
 
 
 
-def chaosorcycle(f, X_0, startyear, years, aS, nu, tol=1e-2):
+def chaosorcycle(f, X_0, startyear, years, a_s, nu, tol=1e-2):
     """ This is the function to distinguish between chaos and quasiperiodic
         orbits. 
         We calculate the FTLE for {startyears, startyears + 1, ... startyears + years - 1}
@@ -441,7 +441,7 @@ def chaosorcycle(f, X_0, startyear, years, aS, nu, tol=1e-2):
         startyear: the year we start our simulations from
         years:  how many FTLE calculation we should run (i.e. the last one
                 runs for (startyear + years - 1) time)
-        aS: double the summer length (one of the bifurcation parameters)
+        a_s: double the summer length (one of the bifurcation parameters)
         nu: generalist predator density dependence parameter (second bif. param)
         tol: the tolerance that is used to distinguish between chaos and quasiper.
 
@@ -460,10 +460,10 @@ def chaosorcycle(f, X_0, startyear, years, aS, nu, tol=1e-2):
     FTLE_values = []
     n0 = X_0[0]
     p0 = X_0[1]
-    t0 = 0.25*r
+    t0 = 0.25*growth_rate
       
     for i in range(startyear+1, startyear+1+years):
-        res = FTLE_new(f, np.array([[n0, p0, t0]]), 1e-5, aS, nu, i)
+        res = FTLE_new(f, np.array([[n0, p0, t0]]), 1e-5, a_s, nu, i)
         #print(res)
         FTLE_values.append(res[0])
     
@@ -474,8 +474,8 @@ def chaosorcycle(f, X_0, startyear, years, aS, nu, tol=1e-2):
     current_directory = os.getcwd()
     #print(current_directory)
     nu_folder = os.path.join(current_directory, f"nu_{nu:.2f}")
-    aS_folder = os.path.join(nu_folder, f"aS_{aS:.2f}")
-    simulation_file_path = os.path.join(aS_folder, "FTLE_values.txt")
+    a_s_folder = os.path.join(nu_folder, f"a_s_{a_s:.2f}")
+    simulation_file_path = os.path.join(a_s_folder, "FTLE_values.txt")
     with open(simulation_file_path, 'w') as filepath:
         filepath.write(f'starting at the {startyear+1}th year and simulating for {years} years\n')
         filepath.write(f'median: {FTLE_result}\n')
@@ -490,7 +490,7 @@ def chaosorcycle(f, X_0, startyear, years, aS, nu, tol=1e-2):
 
 
 
-def FTLE_new(f, initial_conditions, delta, aS, nu, years=1, dt=0.01):
+def FTLE_new(f, initial_conditions, delta, a_s, nu, years=1, dt=0.01):
     """ The FTLE calculation that is used to determine between chaos and
         quasiperiodic orbits
 
@@ -499,7 +499,7 @@ def FTLE_new(f, initial_conditions, delta, aS, nu, years=1, dt=0.01):
         initial_conditions: vector of initial conditions, where the FTLE should
                             be calculated at
         delta: the distance which we use for the finite difference approximation
-        aS: double the summer length (one of the bifurcation parameters)
+        a_s: double the summer length (one of the bifurcation parameters)
         nu: generalist predator density dependence parameter (second bif. param)
         years: number of years that the FTLE simulation should run for
         dt: the step size used when calculating the solutions
@@ -546,7 +546,7 @@ def FTLE_new(f, initial_conditions, delta, aS, nu, years=1, dt=0.01):
     
     # Remove the last column
     initial_vector_reduced = initial_vector[:, :-1]
-    sol_y = rk4solver(aS, nu, r, int(1/dt), years, initial_vector_reduced, f)
+    sol_y = rk4solver(a_s, nu, growth_rate, int(1/dt), years, initial_vector_reduced, f)
     
     # Now, we need to shift the shape again in order to be able to use it.
     sol_y_copy = np.transpose(sol_y, (0, 2, 1))
@@ -578,9 +578,9 @@ def FTLE_new(f, initial_conditions, delta, aS, nu, years=1, dt=0.01):
       
         # now the calculation
         if abs(ev.eigenvalues[0]) > abs(ev.eigenvalues[1]):
-            lam.append(1/(2*years*r)*np.log(abs(ev.eigenvalues[0])))
+            lam.append(1/(2*years*growth_rate)*np.log(abs(ev.eigenvalues[0])))
         else:
-            lam.append(1/(2*years*r)*np.log(abs(ev.eigenvalues[1])))
+            lam.append(1/(2*years*growth_rate)*np.log(abs(ev.eigenvalues[1])))
     
     return lam
 

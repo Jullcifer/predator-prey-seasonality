@@ -23,9 +23,8 @@
 """
 
 import os
-from bifurcation import bifurcationdiagram, cleanedbifurcationdiagram
+from bifurcation_analysis import bifurcationdiagram
 
 base_directory = os.getcwd()
 
 bifurcationdiagram(base_directory)
-#cleanedbifurcationdiagram(base_directory)

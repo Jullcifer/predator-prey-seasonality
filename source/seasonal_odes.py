@@ -84,6 +84,6 @@ def np_odes(
 
 
 def getr():
-    """ Returns the prey growth rate r
+    """ Returns the prey growth rate (r)
     """
     return 5.4
