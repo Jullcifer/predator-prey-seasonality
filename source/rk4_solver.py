@@ -47,7 +47,6 @@ def rk4solver(aS, nu, growth_rate, time_resolution:int, t_end, init_all, odes):
         y0 = init_all[j]
         
         # Initialize y_out with + 1 space to include the initial conditions and tau (3,)        
-        # NEW
         y_out = np.empty((3, time_steps_total // time_resolution + 1)) * np.nan 
 
         # Set the initial conditions in y_out
@@ -60,7 +59,7 @@ def rk4solver(aS, nu, growth_rate, time_resolution:int, t_end, init_all, odes):
         # Loop through each time step starting from 0
         for i in range(0, time_steps_total): 
             t0 = tau[i]
-            #print(tau[i])
+            # Calculate the Runge-Kutta 4 coefficients
             f1 = odes(aS, nu, growth_rate, t0, y)
             f2 = odes(aS, nu, growth_rate, t0 + dtau / 2, y + (dtau / 2) * f1)
             f3 = odes(aS, nu, growth_rate, t0 + dtau / 2, y + (dtau / 2) * f2)

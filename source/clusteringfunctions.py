@@ -1,15 +1,15 @@
 """ All the functions necessary for the clustering of the Poincare solutions.
 """
 
-import numpy as np
 import os
+import numpy as np
 import matplotlib.pyplot as plt
 from seasonal_odes import getr
 from rk4_solver import rk4solver
 
 growth_rate = getr()
 
-def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.getcwd()):
+def clustering(odes, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.getcwd()):
     """ Groups the poincare grid solution into clusters of the same long-term 
         behaviour. 
         First, we cut the trajectories so that we only use the last 50 entries
@@ -25,7 +25,7 @@ def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.
         In the end we have classified all the long-term behaviour that's present 
         
     Args:
-        f: our right hand side of the ODE - i.e. np_odes
+        odes: our right hand side of the ODE - i.e. np_odes
         poinc_sol:  3D array consisting of our solution trajectories
                     where each trajectory i at time t has entries [n,p,t]
         aS: double the summer length
@@ -50,23 +50,23 @@ def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.
         FTLE_tolerance: tolerance used to determine whether we have chaos or cycle
     """
     
-    n = poinc_sol.shape[0]
-    m = poinc_sol.shape[1]
+    num_trajectories = poinc_sol.shape[0]
+    trajectory_length = poinc_sol.shape[1]
     
     Xcopy = np.transpose(poinc_sol, (0, 2, 1))
     
     # ensuring we only take max. 100 orbits
-    if n>100:
+    if num_trajectories>100:
         # we have too many orbits. Select 100 out of them by random
-        selected_traj = np.random.choice(n, 100, replace=False)
+        selected_traj = np.random.choice(num_trajectories, 100, replace=False)
         #X = poinc_sol[selected_traj, -50:, :2] # we also cut the time from our array
         X = Xcopy[selected_traj, -50:, :2] # we also cut the time from our array
     else:
         #X = poinc_sol[:, -50:, :2]
         X = Xcopy[:, -50:, :2]
     
-    n = X.shape[0]
-    m = X.shape[1]
+    num_trajectories = X.shape[0]
+    trajectory_length = X.shape[1]
     
     ###########################################
     # Setting up the matrices
@@ -74,14 +74,14 @@ def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.
     
     # the similarity matrix
     bigK = 1e4
-    W = np.zeros((n, n))
+    W = np.zeros((num_trajectories, num_trajectories))
     
-    for i in range(0, n):
-        for j in range(i + 1, n):
+    for i in range(0, num_trajectories):
+        for j in range(i + 1, num_trajectories):
             sum = 0
-            for k in range(0, m-1):
+            for k in range(0, trajectory_length-1):
                 sum += np.sqrt((X[i][k+1][0] - X[j][k+1][0])**2 + (X[i][k+1][1] - X[j][k+1][1])**2) + np.sqrt((X[i][k][0] - X[j][k][0])**2 + (X[i][k][1] - X[j][k][1])**2)
-            rval = sum/((m-1)*2)
+            rval = sum/((trajectory_length-1)*2)
             if rval < 1e-4:
                 #print('basically no difference')
                 W[i][j] = bigK
@@ -91,15 +91,15 @@ def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.
                 W[j][i] = 1/rval
     
     # now the diagonal elements
-    for i in range(n):
+    for i in range(num_trajectories):
         W[i][i] = bigK
     
     # and the diagonal matrix
     
-    D = np.zeros((n, n))
+    D = np.zeros((num_trajectories, num_trajectories))
     
-    for i in range(n):
-        for j in range(n):
+    for i in range(num_trajectories):
+        for j in range(num_trajectories):
             D[i][i] += W[i][j]
     
     # Then, we're ready to solve the eigenvalue problem
@@ -113,13 +113,13 @@ def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.
         plt.ylabel("abs(lambda_i)")
         plt.grid()
       
-        if n > 25:
+        if num_trajectories > 25:
             ind = np.arange(1,26)
             plt.title("First 25 eigenvalues of the clustering problem")
             plt.plot(ind, eigenvalues[:25])
         else:
-            ind = np.arange(1,n+1)
-            plt.title(f"First {n} eigenvalues of the clustering problem")
+            ind = np.arange(1,num_trajectories+1)
+            plt.title(f"First {num_trajectories} eigenvalues of the clustering problem")
             plt.plot(ind, eigenvalues)
     
     
@@ -142,10 +142,7 @@ def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.
     # Performing the kmeans algorithm and getting the clusters
     ###########################################
     
-    #print(U)
-    #print(bestk)
     centroids, clusters = kmeans(U, bestk)
-    #print(centroids, clusters)
     
     
     # we now have our list of clusters for each of our (max.) 100 (randomly chosen) trajectories
@@ -166,16 +163,13 @@ def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.
     # Convert the dictionary back to a list of tuples
     croppedlist = [[i, j] for j, i in unique_tuples.items()] #maybe need int(j) in the brackets
     
-    #print(croppedlist)
-    
-    
     ###########################################
     # Clustering into periodic solutions
     ###########################################
     
     # with these new unique representatives, we can now check for periodicity.
     
-    newclusters, chaosclusterlist, cyclelist, notsurelist, FTLE_average, FTLE_tolerance = advancedclustering(f, croppedlist, X, 50, 1e-6, aS, nu)
+    newclusters, chaosclusterlist, cyclelist, notsurelist, FTLE_average, FTLE_tolerance = advancedclustering(odes, croppedlist, X, 50, 1e-6, aS, nu)
     # NOTE: due to the new ODE-solving function, I recognized that the solution is not too accurate, so I set the tolerance down a bit (5e-4 or 1e-5 instead of 1e-6)
     
     ###########################################
@@ -191,7 +185,7 @@ def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.
         fig = plt.figure(figsize=(12,8))
         plt.xlabel("Prey n")
         plt.ylabel("Predator p")
-        plt.title(f"Poincare map clusters in the prey-predator space for T_S = {np.round(aS/2, 4)} and nu = {nu}")
+        plt.title(f"Poincare map clusters in the prey-predator space for T_s = {aS/2:.4f} and nu = {nu}")
         plt.vlines(0, ymin=0, ymax=0.2, color='lightgrey')
         plt.hlines(0, xmin=0, xmax=1.0, color='lightgrey')
       
@@ -276,13 +270,13 @@ def clustering(f, poinc_sol, aS, nu, plotit = True, saveplot=False, savepath=os.
         # saving the plot?
       
         if saveplot == True:
-            fig.savefig(f"{savepath}/Poincaregridclusters_TS_{np.round(aS/2, 4)}_nu_{nu}.png")
+            fig.savefig(f"{savepath}/Poincaregridclusters_T_s_{aS/2:.4f}_nu_{nu}.png")
     
     return aS, nu, newclusters, chaosclusterlist, cyclelist, notsurelist, FTLE_average, FTLE_tolerance
 
 
 
-def advancedclustering(f, croppedlist, X, tmax, tol, aS, nu):
+def advancedclustering(odes, croppedlist, X, tmax, tol, aS, nu):
     """ This function takes one representative for each cluster and then 
         decides whether this representative (and thus: all the trajectories
         belonging to this cluster) is a cyclic point - if so: of what length -
@@ -337,13 +331,12 @@ def advancedclustering(f, croppedlist, X, tmax, tol, aS, nu):
     
     while stilltocheck:
         [ti, ci] = stilltocheck[0]
-        #print('new item to check')
-        #print([ti, ci])
+
         currentcheck = [[ti, ci]]
-        #print(X[ti])
+        # we now have to check the trajectory with index ti and the cluster with index ci
         for t in range(1, tmax):
             matching_traj = [tup for tup in stilltocheck if np.linalg.norm(X[ti][t] - X[tup[0]][0])<tol ]
-            #print(matching_traj)
+ 
             if matching_traj:
                 # have found our next value in our cycle
                 if len(matching_traj)>1:
@@ -411,7 +404,7 @@ def advancedclustering(f, croppedlist, X, tmax, tol, aS, nu):
     if chaosclusterlist:
         # we have either chaos or cycles. Test which we have
         Xtest = chaosclusterlist[0]
-        chaosornot = chaosorcycle(f, Xtest, 50, 10, aS, nu)
+        chaosornot = chaosorcycle(odes, Xtest, 50, 10, aS, nu)
         if chaosornot[0] == 'cycle':
             print('cycle')
             cyclelist = chaosclusterlist
@@ -428,7 +421,7 @@ def advancedclustering(f, croppedlist, X, tmax, tol, aS, nu):
 
 
 
-def chaosorcycle(f, X_0, startyear, years, aS, nu, tol=1e-2):
+def chaosorcycle(odes, X_0, startyear, years, aS, nu, tol=1e-2):
     """ This is the function to distinguish between chaos and quasiperiodic
         orbits. 
         We calculate the FTLE for {startyears, startyears + 1, ... startyears + years - 1}
@@ -463,8 +456,8 @@ def chaosorcycle(f, X_0, startyear, years, aS, nu, tol=1e-2):
     t0 = 0.25*growth_rate
       
     for i in range(startyear+1, startyear+1+years):
-        res = FTLE_new(f, np.array([[n0, p0, t0]]), 1e-5, aS, nu, i)
-        #print(res)
+        res = FTLE_new(odes, np.array([[n0, p0, t0]]), 1e-5, aS, nu, i)
+
         FTLE_values.append(res[0])
     
     FTLE_result = np.median(FTLE_values)
@@ -478,10 +471,10 @@ def chaosorcycle(f, X_0, startyear, years, aS, nu, tol=1e-2):
     aS_folder = os.path.join(nu_folder, f"aS_{aS:.2f}")
     simulation_file_path = os.path.join(aS_folder, "FTLE_values.txt")
     with open(simulation_file_path, 'w') as filepath:
-        filepath.write(f'starting at the {startyear+1}th year and simulating for {years} years\n')
-        filepath.write(f'median: {FTLE_result}\n')
-        filepath.write(f'mean: {FTLE_mean}\n')
-        filepath.write(f'tolerance: {tol}\n')
+        filepath.write(f'starting at the {startyear+1}th year and simulating for {years} years\n'
+                       f'median: {FTLE_result}\n'
+                       f'mean: {FTLE_mean}\n'
+                       f'tolerance: {tol}\n')
     
     
     if FTLE_result < tol:
@@ -491,12 +484,12 @@ def chaosorcycle(f, X_0, startyear, years, aS, nu, tol=1e-2):
 
 
 
-def FTLE_new(f, initial_conditions, delta, aS, nu, years=1, dt=0.01):
+def FTLE_new(odes, initial_conditions, delta, aS, nu, years=1, dt=0.01):
     """ The FTLE calculation that is used to determine between chaos and
         quasiperiodic orbits
 
     Args:
-        f: the ODE's of our system
+        odes: the ODE's of our system
         initial_conditions: vector of initial conditions, where the FTLE should
                             be calculated at
         delta: the distance which we use for the finite difference approximation
@@ -547,7 +540,7 @@ def FTLE_new(f, initial_conditions, delta, aS, nu, years=1, dt=0.01):
     
     # Remove the last column
     initial_vector_reduced = initial_vector[:, :-1]
-    sol_y = rk4solver(aS, nu, growth_rate, int(1/dt), years, initial_vector_reduced, f)
+    sol_y = rk4solver(aS, nu, growth_rate, int(1/dt), years, initial_vector_reduced, odes)
     
     # Now, we need to shift the shape again in order to be able to use it.
     sol_y_copy = np.transpose(sol_y, (0, 2, 1))

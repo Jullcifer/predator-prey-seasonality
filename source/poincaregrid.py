@@ -7,7 +7,7 @@ from seasonal_odes import np_odes, getr
 
 growth_rate = getr()
 
-def newpoincgrid(f=np_odes, years=1000, dt=0.01, aS=2*0.7, nu=0.4, nmin=0.01, nmax=1.0, pmin=0.01, pmax=0.13, Nn=10, Np=10):
+def newpoincgrid(odes=np_odes, years=1000, dt=0.01, aS=2*0.7, nu=0.4, nmin=0.01, nmax=1.0, pmin=0.01, pmax=0.13, Nn=10, Np=10):
     """ Creates a grid of initial condition, simulates the system for a long time 
         and returns the poincare sections of each trajectory
     
@@ -41,12 +41,7 @@ def newpoincgrid(f=np_odes, years=1000, dt=0.01, aS=2*0.7, nu=0.4, nmin=0.01, nm
     p_init = np.linspace(pmin, pmax, Np).reshape((Np, 1))
     init_all = np.array(np.meshgrid(n_init, p_init)).T.reshape(-1, 2)
     
-    #print(init_all)
-    
     # now the computation of the solution
-    sol = rk4solver(aS, nu, growth_rate, int(1/dt), years, init_all, f)
-    
-    #print(sol.shape)
-    #print(sol)
+    sol = rk4solver(aS, nu, growth_rate, int(1/dt), years, init_all, odes)
     
     return sol
