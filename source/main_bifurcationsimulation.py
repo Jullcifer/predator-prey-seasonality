@@ -26,5 +26,6 @@ import os
 from bifurcation_analysis import bifurcationdiagram
 
 base_directory = os.getcwd()
+parent_directory = os.path.dirname(base_directory)
 
-bifurcationdiagram(base_directory)
+bifurcationdiagram(parent_directory)

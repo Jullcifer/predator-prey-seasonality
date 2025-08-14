@@ -4,11 +4,11 @@ import numpy as np
 from numba import njit, prange
 
 @njit(parallel=True)
-def rk4solver(a_s, nu, growth_rate, time_resolution:int, t_end, init_all, odes):
+def rk4solver(aS, nu, growth_rate, time_resolution:int, t_end, init_all, odes):
     """Solve ODEs using the Runge-Kutta 4 method.
 
     Args:
-        a_s: Length of the summer parameter for sqd function
+        aS: Length of the summer parameter for sqd function
         growth_rate: Growth rate of prey
         kappa: Sharpness of Squdel function, 0 squared, 1 sin
         t_end: final time point for differentiation, in years
@@ -61,10 +61,10 @@ def rk4solver(a_s, nu, growth_rate, time_resolution:int, t_end, init_all, odes):
         for i in range(0, time_steps_total): 
             t0 = tau[i]
             #print(tau[i])
-            f1 = odes(a_s, nu, growth_rate, t0, y)
-            f2 = odes(a_s, nu, growth_rate, t0 + dtau / 2, y + (dtau / 2) * f1)
-            f3 = odes(a_s, nu, growth_rate, t0 + dtau / 2, y + (dtau / 2) * f2)
-            f4 = odes(a_s, nu, growth_rate, t0 + dtau, y + dtau * f3)
+            f1 = odes(aS, nu, growth_rate, t0, y)
+            f2 = odes(aS, nu, growth_rate, t0 + dtau / 2, y + (dtau / 2) * f1)
+            f3 = odes(aS, nu, growth_rate, t0 + dtau / 2, y + (dtau / 2) * f2)
+            f4 = odes(aS, nu, growth_rate, t0 + dtau, y + dtau * f3)
 
             # Update y with the new values
             y = y + (dtau / 6.0) * (f1 + 2 * f2 + 2 * f3 + f4)

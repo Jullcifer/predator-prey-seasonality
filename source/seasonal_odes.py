@@ -7,7 +7,7 @@ from numba import njit
 
 @njit
 def np_odes(
-    a_s,
+    aS,
     nu, 
     growth_rate,
     tau,
@@ -27,7 +27,7 @@ def np_odes(
     """ Takes in system's ecological parameters and solves the ODEs (Tyson 2016).
 
     Args:
-        a_s: Length of the summer parameter for sqd function
+        aS: Length of the summer parameter for sqd function
         nu: Generalist predator density dependence (per mustelid)
         kappa: Sharpness of Squdel function, 0 squared, 1 sin
         growth_rate: Growth rate of prey
@@ -51,7 +51,7 @@ def np_odes(
     # all 'tilde' values are non-dimensionalized
     omega = 2 * np.pi
     omega_tilde = omega / growth_rate
-    # a_s = 1.2
+    # aS = 1.2
 
 
     # non-dimensionalizing the parameters
@@ -70,14 +70,14 @@ def np_odes(
     # so when sqd=0 we get summer, when sqd is 1 we get winter
 
     n, p = inital_values
-    dn_dtau = a_s * sqd * (n * (1 - n) - (n**2) * p / (b_tilde**2 + n**2)) + (
-        2 - a_s
+    dn_dtau = aS * sqd * (n * (1 - n) - (n**2) * p / (b_tilde**2 + n**2)) + (
+        2 - aS
     ) * (1 - sqd) * (-alpha_tilde * n * p / (beta_tilde + n) + c * n * (1 - n))
-    dp_dtau = a_s * sqd * (
+    dp_dtau = aS * sqd * (
         gamma_tilde * n**2 * p / (b_tilde**2 + n**2)
         + s_tilde * p / (1 + nu_tilde * p)
         - m_tilde * p
-    ) + (2 - a_s) * (1 - sqd) * (
+    ) + (2 - aS) * (1 - sqd) * (
         gamma_tilde * alpha_tilde * n * p / (beta_tilde + n)  -  mu_tilde * p
     )
     return np.array([dn_dtau, dp_dtau])

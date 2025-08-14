@@ -15,21 +15,21 @@ def bifurcationdiagram(base_directory, saveplot=True):
         saveplot (bool): Whether to save the plot. Defaults to True.
     """
     simulation_data = classify_and_read_data(base_directory)
-    a_s_values, nuvalues, categoryvalues = [], [], []
-    for nu, a_s_data in simulation_data.items():
-        for a_s, details in a_s_data.items():
-            a_s_val = float(a_s.split('_')[1])
+    aS_values, nuvalues, categoryvalues = [], [], []
+    for nu, aS_data in simulation_data.items():
+        for aS, details in aS_data.items():
+            aS_val = float(aS.split('_')[1])
             nu_val = float(nu.split('_')[1])
-            a_s_values.append(np.round(a_s_val, 2))
+            aS_values.append(np.round(aS_val, 2))
             nuvalues.append(np.round(nu_val, 2))
             categoryvalues.append(details['categoryvalues'])
-    a_s_unique = np.unique(a_s_values)
+    aS_unique = np.unique(aS_values)
     nu_unique = np.unique(nuvalues)
-    category_matrix = np.full((len(nu_unique), len(a_s_unique)), np.nan)
-    for a_s, nu, category in zip(a_s_values, nuvalues, categoryvalues):
+    category_matrix = np.full((len(nu_unique), len(aS_unique)), np.nan)
+    for aS, nu, category in zip(aS_values, nuvalues, categoryvalues):
         i = np.where(nu_unique == nu)[0][0]
-        j = np.where(a_s_unique == a_s)[0][0]
+        j = np.where(aS_unique == aS)[0][0]
         category_matrix[i, j] = category
     np.savetxt("category_matrix.txt", category_matrix, fmt='%.0f', delimiter=', ')
     if saveplot:
-        plot_bifurcation_diagram(a_s_unique, nu_unique, category_matrix, f"{base_directory}/BifurcationGridPlot.png")
+        plot_bifurcation_diagram(aS_unique, nu_unique, category_matrix, f"{base_directory}/BifurcationGridPlot.png")

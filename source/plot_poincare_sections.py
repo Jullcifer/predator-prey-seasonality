@@ -27,12 +27,12 @@ t_end = 5000
 # time steps within one year
 time_resolution = int(100)
 
-def generate_and_save_plot(a_s, nu, growth_rate=growth_rate, time_resolution=time_resolution, t_end=t_end, init_all=init_all):
-    """Generating Poincare Sections for a specific length of the summer (a_s, Ts). 
+def generate_and_save_plot(aS, nu, growth_rate=growth_rate, time_resolution=time_resolution, t_end=t_end, init_all=init_all):
+    """Generating Poincare Sections for a specific length of the summer (aS, Ts). 
     Saves the plot as a PNG file.
 
     Args: 
-        a_s: Length of the summer parameter for sqd function
+        aS: Length of the summer parameter for sqd function
         nu: Generalist predator density dependence (per mustelid)
         growth_rate: Growth rate of prey
         time_resolution: time steps for differentiation per year (growth_rate / dtau = time_resolution)
@@ -40,7 +40,7 @@ def generate_and_save_plot(a_s, nu, growth_rate=growth_rate, time_resolution=tim
         init_all: 2D array with initial conditions for n, p
     """
     fig, ax = plt.subplots(figsize=(8, 6))
-    sols = rk4solver(a_s=a_s, nu=nu, growth_rate=growth_rate, time_resolution=time_resolution, t_end=t_end, init_all=init_all, odes=np_odes)
+    sols = rk4solver(aS=aS, nu=nu, growth_rate=growth_rate, time_resolution=time_resolution, t_end=t_end, init_all=init_all, odes=np_odes)
     #valid_indices = ~np.isnan(n_values) & ~np.isnan(p_values)
     ax.scatter(
         sols[:, 0, 4900::].flatten(),
@@ -52,17 +52,17 @@ def generate_and_save_plot(a_s, nu, growth_rate=growth_rate, time_resolution=tim
     ax.set_ylim(0, 0.25)
     ax.set_xlabel("n (prey biomass / unit area)")
     ax.set_ylabel("p (predator biomass / unit area)")
-    ax.set_title(f"T_s = {a_s*0.5:.5f}, nu = 3")
+    ax.set_title(f"T_s = {aS*0.5:.5f}, nu = 3")
     ax.grid(True)
-    plt.savefig(f"PMaps/plot_{a_s:.5f}.png", dpi=300)
+    plt.savefig(f"../PMaps/plot_{aS:.5f}.png", dpi=300)
     plt.close(fig)
 
-# Specify the range of a_s values to iterate over
-a_s_values = np.round(np.linspace(0.010, 1.950, 10), 5)  
+# Specify the range of aS values to iterate over
+aS_values = np.round(np.linspace(0.010, 1.950, 10), 5)  
 
 # Ensure output directory exists before plotting
-os.makedirs("PMaps", exist_ok=True)
+os.makedirs("../PMaps", exist_ok=True)
 
-# Run and save a plot for each a_s value    
-for each_a_s in a_s_values:
-    generate_and_save_plot(each_a_s, nu, growth_rate=growth_rate, time_resolution=time_resolution, t_end=t_end, init_all=init_all)
+# Run and save a plot for each aS value    
+for each_aS in aS_values:
+    generate_and_save_plot(each_aS, nu, growth_rate=growth_rate, time_resolution=time_resolution, t_end=t_end, init_all=init_all)
