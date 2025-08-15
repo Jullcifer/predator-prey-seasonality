@@ -63,8 +63,15 @@ To make a 2D bifurcation diagram run:
 1. `main_clusteringsimulation.py`
 2. `main_bifurcationsimulation.py`
 
+Without making any changes to the code, running these scripts should produce the following test bifurcation plot:
+<img width="700" alt="BifurcationGridPlot" src="https://github.com/user-attachments/assets/28126f18-e0cc-41f1-981e-a427ef0bd356" />
+
+
 To make Poincare plots for selected values of season length run (you can change the values of summer lengths for plots in the same script, if desired):
 1. `plot_poincare_sections.py`
+
+Without making any changes to the code, running this script should produce 10 Poincare maps, including following (#1 and #7):<img width="500" alt="plot_1" src="https://github.com/user-attachments/assets/57bb9c6f-f0f9-4206-961b-12991fae9637" />
+  <img width="500" alt="plot_7" src="https://github.com/user-attachments/assets/2e14cde8-4d91-4795-a092-2eea657a8afe" />
 
 ## Scripts
 
