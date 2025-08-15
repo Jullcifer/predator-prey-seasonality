@@ -1,6 +1,7 @@
 # Seasonal Predator-Prey System Simulations
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16883122.svg)](https://doi.org/10.5281/zenodo.16883122)
 
 This repository contains scripts to simulate and analyze the dynamics of a predator-prey system using ordinary differential equations (ODEs). The project is based on the work of [Tyson et al. (2016)](https://doi.org/10.1086/688665) and adapted for Rodent-Mustelid system in Fennoscandia. The repository includes tools for solving and visualizing the system's behavior under varying seasonal conditions. Project is still in progress and being updated. 
 
