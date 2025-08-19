@@ -9,7 +9,7 @@ This repository contains scripts to simulate and analyze the dynamics of a preda
 
 - [Project Overview](#project-overview)
 - [Installation](#installation)
-- [Usage](#usage)
+- [Usage | Workflow](#usage)
 - [Scripts](#scripts)
 - [License](#license)
 
@@ -18,7 +18,9 @@ This repository contains scripts to simulate and analyze the dynamics of a preda
 
 This project models the interaction between prey (rodents) and predators (mustelids) using a system of ODEs. The model incorporates seasonal variations via different predatory responce and specifically focuses on the length of the summer season. The primary aim is to generate Poincaré sections to analyze the system's dynamics under different seasonal lengths.
 
-## Requirements
+## Installation
+
+### Requirements
 
 To run the scripts in this repository, you need to have Python installed along with the following packages:
 
@@ -28,7 +30,7 @@ To run the scripts in this repository, you need to have Python installed along w
 
 The standard library modules csv and os are also used, but you do not need to install them separately.
 
-### Installation
+### How to install
 
 To clone this repository, follow these steps:
 
