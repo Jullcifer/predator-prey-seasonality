@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16883122.svg)](https://doi.org/10.5281/zenodo.16883122)
 
-This repository contains scripts to simulate and analyze the dynamics of a predator-prey system using ordinary differential equations (ODEs). The project is based on the work of [Tyson et al. (2016)](https://doi.org/10.1086/688665) and adapted for Rodent-Mustelid system in Fennoscandia. The repository includes tools for solving and visualizing the system's behavior under varying seasonal conditions. Project is still in progress and being updated. 
+This repository contains scripts to simulate and analyze the dynamics of a predator-prey system using ordinary differential equations (ODEs). The associated publication can be found here: [Changes in seasonality and dynamics of the rodent-mustelid system](https://doi.org/10.1016/j.ecolmodel.2025.111362). The project is based on the work of [Tyson et al. (2016)](https://doi.org/10.1086/688665) and adapted for the Rodent-Mustelid system in Fennoscandia. The repository includes tools for solving and visualizing the system's behavior under varying seasonal conditions. The project is still in progress and being updated. 
 
 ## Table of Contents
 
@@ -58,7 +58,7 @@ Each script in this repository serves a specific purpose in the simulation and a
 
 ### Model Specification and Input Data
 
-To use the methods for analysing your own equations/system of ODEs, you need to change the equations given in the `seasonal_odes.py` script. Change both the parameter values and the equations, if necessary. Make sure that the new parameters are then passed on the `rk4_solver.py`. To run the analysis for rodent-mustelid system, you don't need to change the equations shape, but you can change the parameter values if desired. No input data is needed in this case.
+To use the methods for analysing your own equations/system of ODEs, you need to change the equations given in the `seasonal_odes.py` script. Change both the parameter values and the equations, if necessary. Make sure that the new parameters are then passed on the `rk4_solver.py`. To run the analysis for the rodent-mustelid system, you don't need to change the equations' shape, but you can change the parameter values if desired. No input data is needed in this case.
 
 ### Run order to produce main plots
 
@@ -70,17 +70,17 @@ Without making any changes to the code, running these scripts should produce the
 <img width="700" alt="BifurcationGridPlot" src="https://github.com/user-attachments/assets/28126f18-e0cc-41f1-981e-a427ef0bd356" />
 
 
-To make Poincare plots for selected values of season length run (you can change the values of summer lengths for plots in the same script, if desired):
+To make Poincaré plots for selected values of season length run (you can change the values of summer lengths for plots in the same script, if desired):
 1. `plot_poincare_sections.py`
 
-Without making any changes to the code, running this script should produce 10 Poincare maps, including following (#1 and #7):
+Without making any changes to the code, running this script should produce 10 Poincaré maps, including the following (#1 and #7):
 
 <img width="400" alt="plot_1" src="https://github.com/user-attachments/assets/57bb9c6f-f0f9-4206-961b-12991fae9637" /> <img width="400" alt="plot_7" src="https://github.com/user-attachments/assets/2e14cde8-4d91-4795-a092-2eea657a8afe" />
 
 ## Scripts
 
 ### rk4_solver.py
-This script provides a Runge-Kutta 4th order solver for solving ODEs. It is optimized using numba for performance and can simulate for a matrix of initial conditions for prey (`n`) and predator (`p`).
+This script provides a Runge-Kutta 4th-order solver for solving ODEs. It is optimized using numba for performance and can simulate for a matrix of initial conditions for prey (`n`) and predator (`p`).
 
 ### seasonal_odes.py
 This script defines the system of ODEs for the rodent-mustelid dynamics, adapted from [Tyson et al. (2016)](https://doi.org/10.1086/688665). It utilizes parameters from the rodent-mustelid system in Fennoscandia.
